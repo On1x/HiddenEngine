@@ -1,0 +1,17 @@
+{
+  "name": "hidden_engine",
+  "version": "0.0.1",
+  "description": "Hidden Engine for light node.js sites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anatoly Piskunov aka On1x",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.0",
+    "crypto": "^1.0.1",
+    "express": "^4.15.4",
+    "zlib": "^1.0.5"
+  }
+}
