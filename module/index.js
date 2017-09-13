@@ -3,6 +3,7 @@
 module.exports=class he_module{
 	constructor(obj){
 		this.global=obj.global;
+		this.session=obj.session;
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.path_array=obj.path_array;
@@ -13,8 +14,10 @@ module.exports=class he_module{
 	}
 	exec(){//http://expressjs.com/ru/4x/api.html#res
 		this.content+='<h1>Hidden Engine Index</h1>';
-		if(this.global.auth){
+		if(this.session.auth){
 			this.content+='<p>Authorized</p>';
+			this.content+='<p><a href="/upvote-circle/">Upvote circle</a></p>';
+			this.content+='<p><a href="/clear-global/">Clear global json database</a></p>';
 			this.content+='<p><a href="/logout/">Logout</a></p>';
 		}
 		else{
@@ -31,6 +34,6 @@ module.exports=class he_module{
 		this.content+='<form action="" method="POST"><input type="text" name="data" value="'+this._POST.data+'"><input type="submit" name="send" value="Send!"></form>';
 	}
 	result(){
-		return {'content':this.content,'replace':this.replace,'response':this.res,'global':this.global}
+		return {'content':this.content,'replace':this.replace,'response':this.res,'global':this.global,'session':this.session}
 	}
 }

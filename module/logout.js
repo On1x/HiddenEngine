@@ -3,6 +3,7 @@
 module.exports=class he_module{
 	constructor(obj){
 		this.global=obj.global;
+		this.session=obj.session;
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.path_array=obj.path_array;
@@ -14,10 +15,10 @@ module.exports=class he_module{
 	exec(){
 		this.res.cookie('login','',{});
 		this.res.cookie('password','',{});
-		this.global.redirect=true;
+		this.session.redirect=true;
 		this.res.redirect(302,'/');
 	}
 	result(){
-		return {'content':this.content,'replace':this.replace,'response':this.res,'global':this.global}
+		return {'content':this.content,'replace':this.replace,'response':this.res,'global':this.global,'session':this.session}
 	}
 }

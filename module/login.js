@@ -4,6 +4,7 @@ var crypto = require('crypto');
 module.exports=class he_module{
 	constructor(obj){
 		this.global=obj.global;
+		this.session=obj.session;
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.path_array=obj.path_array;
@@ -13,15 +14,15 @@ module.exports=class he_module{
 		this.res=obj.res;
 	}
 	exec(){
-		if(this.global.auth){
-			this.global.redirect=true;
+		if(this.session.auth){
+			this.session.redirect=true;
 			this.res.redirect(302,'/');
 		}
 		else{
 			if(typeof this._POST.login !== 'undefined'){
 				this.res.cookie('login',this._POST.login,{});
 				this.res.cookie('password',crypto.createHash('md5').update(this._POST.password).digest("hex"),{});
-				this.global.redirect=true;
+				this.session.redirect=true;
 				this.res.redirect(302,'/login/');
 			}
 			this.content+='<h1>Authorization</h1>';
@@ -36,6 +37,6 @@ module.exports=class he_module{
 		}
 	}
 	result(){
-		return {'content':this.content,'replace':this.replace,'response':this.res,'global':this.global}
+		return {'content':this.content,'replace':this.replace,'response':this.res,'global':this.global,'session':this.session}
 	}
 }
