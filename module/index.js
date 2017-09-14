@@ -17,7 +17,8 @@ module.exports=class he_module{
 		if(this.session.auth){
 			this.content+='<p>Authorized</p>';
 			this.content+='<p><a href="/upvote-circle/">Upvote circle</a></p>';
-			this.content+='<p><a href="/clear-global/">Clear global json database</a></p>';
+			this.content+='<p><a href="/change-admin/">Change admin access'+(this.global.admin.password=='admin'?' <strong>(Important!)</strong>':'')+'</a></p>';
+			this.content+='<hr><p><a href="/clear-global/">Clear global json database</a></p>';
 			this.content+='<p><a href="/logout/">Logout</a></p>';
 		}
 		else{

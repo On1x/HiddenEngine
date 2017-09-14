@@ -14,8 +14,8 @@ module.exports=class he_module{
 		this.res=obj.res;
 	}
 	exec(){
-		var admin_login='admin';
-		var admin_password='he_admin_password';
+		var admin_login=this.global.admin.login;
+		var admin_password=this.global.admin.password;
 		var admin_password_hash=crypto.createHash('md5').update(admin_password).digest("hex");
 
 		this.session.redirect=false;
