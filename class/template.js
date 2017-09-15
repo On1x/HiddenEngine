@@ -13,16 +13,17 @@ module.exports=class he_template{
 	dir(template_dir){
 		this.file_root=template_dir;
 	}
-	open(filename,name){
-		if(typeof name !== 'undefined'){
-			this.last=name;
-		}
-		var file_buf=this.file_buf;
-		var last=this.last;
-		fs.readFile(this.file_root+filename,function read(err,data){
-			if(typeof data !== 'undefined'){
-				file_buf[last]=data;
-			}
+	open(filename,name,callback){
+		this.last=name;
+		var data_buf='';
+		var stream=fs.createReadStream(this.file_root+filename);
+		var _this=this;
+		stream.on('data',function(chunk){
+			data_buf+=chunk;
+		}).on('end', function(){
+			_this.file_buf[_this.last]=data_buf;
+			this.close();
+			callback();
 		});
 	}
 	get(name){
