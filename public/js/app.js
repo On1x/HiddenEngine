@@ -1,0 +1,12 @@
+$(function(){
+	$('.hidden-text').bind('click',function(){
+		if($(this).hasClass('visible')){
+			$(this).html('hidden');
+			$(this).removeClass('visible');
+		}
+		else{
+			$(this).addClass('visible');
+			$(this).html($(this).attr('data-text'));
+		}
+	});
+});
