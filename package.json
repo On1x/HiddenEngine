@@ -1,6 +1,6 @@
 {
   "name": "hidden_engine",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Hidden Engine for light node.js sites",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,8 @@
     "body-parser": "^1.18.0",
     "crypto": "^1.0.1",
     "express": "^4.15.4",
+    "On1x/golos-js": "^0.6.3",
+    //"golos-js": "file:../golos-js",
     "steem": "^0.6.3",
     "zlib": "^1.0.5"
   }

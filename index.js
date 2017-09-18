@@ -7,10 +7,7 @@ var bodyparser=require('body-parser');
 var fs=require('fs');
 
 var steem=require('steem');
-var golos=require('steem');
-golos.config.set('websocket','wss://ws.golos.io');
-golos.config.set('address_prefix','GLS');
-golos.config.set('chain_id','782a3039b478c839e4cb0c941ff4eaeb7df40bdd68bd441afd444b9da763de12');
+var golos=require('golos-js');
 
 var app=express();
 var url_reg = new RegExp('^[a-z0-9A-Z\-_!~@\$\% \+\=\*\&:;,\.]+$');

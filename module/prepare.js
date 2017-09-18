@@ -33,7 +33,7 @@ module.exports=class he_module{
 				if(this.cookies.password==admin_password_hash){
 					this.session.auth=true;
 					this.global.change_template='engine-index.tpl';
-					this.replace.menu+=`<div class="grey" style="margin:10px;text-align:right;position:absolute;text-align:right;right:55px;">You login: ${admin_login}</div>`;
+					this.replace.menu+=`<div class="grey" style="margin:10px;text-align:right;position:absolute;text-align:right;right:55px;">Your login: ${admin_login}</div>`;
 					this.replace.menu+='<ul class="admin-menu">';
 					var admin_menu={
 						'accounts':'Accounts',
