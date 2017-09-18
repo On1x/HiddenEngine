@@ -5,7 +5,6 @@ module.exports=class he_module{
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.session=obj.session;
-		this.global=obj.global;
 		this.path_array=obj.path_array;
 		this._GET=obj._GET;
 		this._POST=obj._POST;
@@ -25,7 +24,6 @@ module.exports=class he_module{
 			'content':this.content,
 			'replace':this.replace,
 			'session':this.session,
-			'global':this.global,
 			'response':this.response,
 			'path_array':this.path_array,
 			'_GET':this._GET,

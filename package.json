@@ -1,19 +1,27 @@
 {
   "name": "hidden_engine",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Hidden Engine for light node.js sites",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Anatoly Piskunov aka On1x",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/On1x/HiddenEngine.git"
+  },
+  "author": "Anatoly Piskunov (https://github.com/On1x)",
   "license": "MIT",
   "dependencies": {
+    "async-limiter": "^1.0.0",
     "body-parser": "^1.18.0",
     "crypto": "^1.0.1",
     "express": "^4.15.4",
-    "golos-js": "file:./golos-js",
+    "golos-js": "file:golos-js",
     "steem": "^0.6.3",
     "zlib": "^1.0.5"
-  }
+  },
+  "contributors": [
+    "Anatoly Piskunov (https://github.com/On1x)"
+  ]
 }

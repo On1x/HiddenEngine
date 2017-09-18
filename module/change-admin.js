@@ -6,7 +6,6 @@ module.exports=class he_module{
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.session=obj.session;
-		this.global=obj.global;
 		this.path_array=obj.path_array;
 		this._GET=obj._GET;
 		this._POST=obj._POST;
@@ -21,8 +20,8 @@ module.exports=class he_module{
 		if(this.session.auth){
 			if(typeof this._POST.login !== 'undefined'){
 				if(this._POST.password==this._POST.password2){
-					this.global.admin.login=this._POST.login;
-					this.global.admin.password=this._POST.password;
+					global.he.admin.login=this._POST.login;
+					global.he.admin.password=this._POST.password;
 					this.response.cookie('login',this._POST.login,{});
 					this.response.cookie('password',crypto.createHash('md5').update(this._POST.password).digest("hex"),{});
 
@@ -44,12 +43,10 @@ module.exports=class he_module{
 			this.content+='<p><strong>Warning! </strong>Not authorized</p>';
 			this.content+='<p><a href="/login/">Login</a></p>';
 		}
-
 		callback({
 			'content':this.content,
 			'replace':this.replace,
 			'session':this.session,
-			'global':this.global,
 			'response':this.response,
 			'path_array':this.path_array,
 			'_GET':this._GET,

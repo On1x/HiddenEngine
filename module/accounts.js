@@ -5,7 +5,6 @@ module.exports=class he_module{
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.session=obj.session;
-		this.global=obj.global;
 		this.path_array=obj.path_array;
 		this._GET=obj._GET;
 		this._POST=obj._POST;
@@ -20,9 +19,9 @@ module.exports=class he_module{
 			if(this.session.auth){
 				if('delete'==this._GET.action){
 					var id=parseInt(this._GET.id);
-					for(var i=0;i<this.global.accounts.length;i++){
-						if(this.global.accounts[i].id==id){
-							this.global.accounts.splice(i,1);
+					for(var i=0;i<global.he.accounts.length;i++){
+						if(global.he.accounts[i].id==id){
+							global.he.accounts.splice(i,1);
 						}
 					}
 					this.session.redirect=true;
@@ -31,8 +30,8 @@ module.exports=class he_module{
 				else
 				if(typeof this._POST.add_account !== 'undefined'){
 					var m={'login':this._POST.login,'posting_key':this._POST.posting_key,'active_key':this._POST.active_key,'type':parseInt(this._POST.type)};
-					m.id=++this.global.counters.accounts;
-					this.global.accounts.push(m);
+					m.id=++global.he.counters.accounts;
+					global.he.accounts.push(m);
 
 					this.session.redirect=true;
 					this.response.redirect(302,'/accounts/');
@@ -66,7 +65,7 @@ module.exports=class he_module{
 					</tr>
 					</thead>
 					<tbody>`;
-					for(var m of this.global.accounts){
+					for(var m of global.he.accounts){
 						this.content+=`
 					<tr>
 						<td>${m.id}</td>
@@ -103,7 +102,6 @@ module.exports=class he_module{
 			'content':this.content,
 			'replace':this.replace,
 			'session':this.session,
-			'global':this.global,
 			'response':this.response,
 			'path_array':this.path_array,
 			'_GET':this._GET,

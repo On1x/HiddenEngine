@@ -5,7 +5,6 @@ module.exports=class he_module{
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.session=obj.session;
-		this.global=obj.global;
 		this.path_array=obj.path_array;
 		this._GET=obj._GET;
 		this._POST=obj._POST;
@@ -19,15 +18,15 @@ module.exports=class he_module{
 			this.replace.title='Upvote circle - '+this.replace.title;
 			if(this.session.auth){
 				if(typeof this._POST.add_vote_action !== 'undefined'){
-					for(var account of this.global.accounts){
+					for(var account of global.he.accounts){
 						if(account.type==parseInt(this._POST.type)){
 							if(typeof account.upvote_circle !== 'undefined'){
 								if(1==account.upvote_circle){
 									if(typeof account.posting_key !== 'undefined'){
 										if(''!=account.posting_key){
 											var queue_item={'action':'vote','data':{'user_login':account.login,'user_posting_key':account.posting_key,'target_login':this._POST.target_login,'target_permlink':this._POST.target_permlink,'vote_weight':parseInt(this._POST.vote_weight)}};
-											queue_item.id=++this.global.counters.golos_queue;
-											this.global.golos_queue.push(queue_item);
+											queue_item.id=++global.he.counters.golos_queue;
+											global.he.golos_queue.push(queue_item);
 										}
 									}
 								}
@@ -39,15 +38,15 @@ module.exports=class he_module{
 				}
 				else
 				if(typeof this._POST.add_flag_action !== 'undefined'){
-					for(var account of this.global.accounts){
+					for(var account of global.he.accounts){
 						if(account.type==parseInt(this._POST.type)){
 							if(typeof account.upvote_circle !== 'undefined'){
 								if(1==account.upvote_circle){
 									if(typeof account.posting_key !== 'undefined'){
 										if(''!=account.posting_key){
 											var queue_item={'action':'flag','data':{'user_login':account.login,'user_posting_key':account.posting_key,'target_login':this._POST.target_login,'target_permlink':this._POST.target_permlink,'vote_weight':parseInt(this._POST.vote_weight)}};
-											queue_item.id=++this.global.counters.golos_queue;
-											this.global.golos_queue.push(queue_item);
+											queue_item.id=++global.he.counters.golos_queue;
+											global.he.golos_queue.push(queue_item);
 										}
 									}
 								}
@@ -59,15 +58,15 @@ module.exports=class he_module{
 				}
 				else
 				if(typeof this._POST.add_witness_vote_action !== 'undefined'){
-					for(var account of this.global.accounts){
+					for(var account of global.he.accounts){
 						if(account.type==parseInt(this._POST.type)){
 							if(typeof account.upvote_circle !== 'undefined'){
 								if(1==account.upvote_circle){
 									if(typeof account.active_key !== 'undefined'){
 										if(''!=account.active_key){
 											var queue_item={'action':'witness_vote','data':{'user_login':account.login,'user_active_key':account.active_key,'target_login':this._POST.target_login}};
-											queue_item.id=++this.global.counters.golos_queue;
-											this.global.golos_queue.push(queue_item);
+											queue_item.id=++global.he.counters.golos_queue;
+											global.he.golos_queue.push(queue_item);
 										}
 									}
 								}
@@ -79,15 +78,15 @@ module.exports=class he_module{
 				}
 				else
 				if(typeof this._POST.add_witness_unvote_action !== 'undefined'){
-					for(var account of this.global.accounts){
+					for(var account of global.he.accounts){
 						if(account.type==parseInt(this._POST.type)){
 							if(typeof account.upvote_circle !== 'undefined'){
 								if(1==account.upvote_circle){
 									if(typeof account.active_key !== 'undefined'){
 										if(''!=account.active_key){
 											var queue_item={'action':'witness_unvote','data':{'user_login':account.login,'user_active_key':account.active_key,'target_login':this._POST.target_login}};
-											queue_item.id=++this.global.counters.golos_queue;
-											this.global.golos_queue.push(queue_item);
+											queue_item.id=++global.he.counters.golos_queue;
+											global.he.golos_queue.push(queue_item);
 										}
 									}
 								}
@@ -100,9 +99,9 @@ module.exports=class he_module{
 				else
 				if('deactivate'==this._GET.action){
 					var id=parseInt(this._GET.id);
-					for(var i=0;i<this.global.accounts.length;i++){
-						if(this.global.accounts[i].id==id){
-							this.global.accounts[i].upvote_circle=0;
+					for(var i=0;i<global.he.accounts.length;i++){
+						if(global.he.accounts[i].id==id){
+							global.he.accounts[i].upvote_circle=0;
 						}
 					}
 					this.session.redirect=true;
@@ -111,9 +110,9 @@ module.exports=class he_module{
 				else
 				if('activate'==this._GET.action){
 					var id=parseInt(this._GET.id);
-					for(var i=0;i<this.global.accounts.length;i++){
-						if(this.global.accounts[i].id==id){
-							this.global.accounts[i].upvote_circle=1;
+					for(var i=0;i<global.he.accounts.length;i++){
+						if(global.he.accounts[i].id==id){
+							global.he.accounts[i].upvote_circle=1;
 						}
 					}
 					this.session.redirect=true;
@@ -122,8 +121,8 @@ module.exports=class he_module{
 				else
 				if('deactivate_all'==this._GET.action){
 					var id=parseInt(this._GET.id);
-					for(var i=0;i<this.global.accounts.length;i++){
-							this.global.accounts[i].upvote_circle=0;
+					for(var i=0;i<global.he.accounts.length;i++){
+							global.he.accounts[i].upvote_circle=0;
 					}
 					this.session.redirect=true;
 					this.response.redirect(302,'/upvote-circle/');
@@ -131,8 +130,8 @@ module.exports=class he_module{
 				else
 				if('activate_all'==this._GET.action){
 					var id=parseInt(this._GET.id);
-					for(var i=0;i<this.global.accounts.length;i++){
-							this.global.accounts[i].upvote_circle=1;
+					for(var i=0;i<global.he.accounts.length;i++){
+							global.he.accounts[i].upvote_circle=1;
 					}
 					this.session.redirect=true;
 					this.response.redirect(302,'/upvote-circle/');
@@ -218,7 +217,7 @@ module.exports=class he_module{
 					</tr>
 					</thead>
 					<tbody>`;
-					for(var m of this.global.accounts){
+					for(var m of global.he.accounts){
 						this.content+=`
 					<tr>
 						<td>${m.id}</td>
@@ -247,7 +246,6 @@ module.exports=class he_module{
 			'content':this.content,
 			'replace':this.replace,
 			'session':this.session,
-			'global':this.global,
 			'response':this.response,
 			'path_array':this.path_array,
 			'_GET':this._GET,

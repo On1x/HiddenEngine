@@ -4,11 +4,9 @@ var crypto = require('crypto');
 module.exports=class he_module{
 	constructor(finish_request,obj){
 		this.finish_request=finish_request;
-
 		this.content=obj.content;
 		this.replace=obj.replace;
 		this.session=obj.session;
-		this.global=obj.global;
 		this.path_array=obj.path_array;
 		this._GET=obj._GET;
 		this._POST=obj._POST;
@@ -18,11 +16,11 @@ module.exports=class he_module{
 		this.exec();
 	}
 	exec(){
-		var admin_login=this.global.admin.login;
-		var admin_password=this.global.admin.password;
+		var admin_login=global.he.admin.login;
+		var admin_password=global.he.admin.password;
 		var admin_password_hash=crypto.createHash('md5').update(admin_password).digest("hex");
 
-		this.global.change_template='index.tpl';
+		this.session.change_template='index.tpl';
 		this.session.redirect=false;
 		this.replace.title='HiddenEngine';
 		this.replace.menu='';
@@ -32,7 +30,7 @@ module.exports=class he_module{
 			if(this.cookies.login==admin_login){
 				if(this.cookies.password==admin_password_hash){
 					this.session.auth=true;
-					this.global.change_template='engine-index.tpl';
+					this.session.change_template='engine-index.tpl';
 					this.replace.menu+=`<div class="grey" style="margin:10px;text-align:right;position:absolute;text-align:right;right:55px;">Your login: ${admin_login}</div>`;
 					this.replace.menu+='<ul class="admin-menu">';
 					var admin_menu={
@@ -52,7 +50,6 @@ module.exports=class he_module{
 			'content':this.content,
 			'replace':this.replace,
 			'session':this.session,
-			'global':this.global,
 			'response':this.response,
 			'path_array':this.path_array,
 			'_GET':this._GET,
