@@ -30,17 +30,61 @@ Hidden Engine это легкий движок для сайтов и прило
 cd ~
 curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh -o install_nvm.sh
 bash install_nvm.sh
-source ~/.profile
 nvm ls-remote
 nvm install 8.4.0
 node -v
 sudo apt-get install nodejs-legacy
+source ~/.profile
 npm install express -g
+npm install http -g
 npm install pm2 -g
+npm install cross-env -g
+npm install zlib -g
+npm install hash-base -g
+npm install fs -g
+npm install md5 -g
+npm install uglify-js -g
+npm install babel -g
+npm install steem -g
+npm install ws -g
+npm install options -g
+npm install babel-core -g
+npm install webpack -g
+npm install webpack-visualizer-plugin -g
+npm install async-limiter -g
+npm install npm-cli -g
+
+mkdir -p /var/www/nodejs/
+cd /var/www/nodejs/
 
 git clone https://github.com/On1x/HiddenEngine.git
 cd HiddenEngine
-./install.sh
+https://github.com/On1x/golos-js.git
+cd golos-js
+npm install webpack --save
+npm install hash-base --save
+npm install base-x --save
+npm install bigi --save
+npm install buffer-xor --save
+npm install browserify-aes --save
+npm install create-hash --save
+npm install create-hmac --save
+npm install is-windows --save
+npm install isexe --save
+npm install long --save
+npm install ms --save
+npm install pseudomap --save
+npm install shebang-regex --save
+npm install shebang-command --save
+npm install ultron --save
+npm install which --save
+npm install webpack-visualizer-plugin --save
+npm install async-limiter --save
+npm install babel-core --save
+npm install babel --save
+npm install --save
+cd ..
+npm install
 ```
 ## Запуск
 ```
