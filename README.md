@@ -4,6 +4,8 @@ Hidden Engine это легкий движок для сайтов и прило
 ## Статус разработки
 Текущая версия: v0.0.5
 
+GitHub: https://github.com/On1x/HiddenEngine
+
 Веб-страница: https://goldvoice.club/@hiddenengine/
 
 ### Что сделано в последнем релизе
