@@ -48,17 +48,24 @@ HiddenEngine при установке запишется в автозапус�
 cd ~
 curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh -o install_nvm.sh
 bash install_nvm.sh
+source ~/.profile
 nvm ls-remote
 nvm install 8.5.0
 node -v
 sudo apt-get install nodejs-legacy
 npm install npm -g
-source ~/.profile
-git clone https://github.com/On1x/HiddenEngine.git && cd HiddenEngine && npm install
+npm install pm2 -g
+git clone https://github.com/On1x/HiddenEngine.git
+cd HiddenEngine
+apt-get install openssl
+mkdir ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/ssl.key -out ./ssl/ssl.crt -subj \"/C=HE/ST=HE/L=HE/O=HE\"
+npm install
 ```
 ## Управление состоянием приложения
 ```
 npm stop
 npm start
+npm restart
 pm2 monit hiddenengine
 ```

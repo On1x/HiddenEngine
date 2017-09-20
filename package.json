@@ -6,8 +6,8 @@
 	"author": "Anatoly Piskunov (https://github.com/On1x)",
 	"license": "MIT",
 	"scripts": {
-		"preinstall": "apt-get install openssl && mkdir ssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/ssl.key -out ./ssl/ssl.crt -subj \"/C=HE/ST=HE/L=HE/O=HE\" && pm2 startup",
-		"start": "pm2 restart index.js --name hiddenengine && pm2 save && pm2 monit hiddenengine",
+		"preinstall": "pm2 startup",
+		"start": "pm2 start index.js --name hiddenengine && pm2 save && pm2 monit hiddenengine",
 		"stop": "pm2 stop hiddenengine",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
