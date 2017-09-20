@@ -1,7 +1,9 @@
 ## Что такое HiddenEngine?
 Hidden Engine это легкий движок для сайтов и приложений специализированных для блокчейна Steem/Golos.
+
 ## Статус разработки
 Текущая версия: v0.0.5
+
 Веб-страница: https://goldvoice.club/@hiddenengine/
 
 ### Что сделано в последнем релизе
@@ -15,7 +17,9 @@ Hidden Engine это легкий движок для сайтов и прило
 
 ### Планы на будущее
 Написать механизм автоматического курирования постов авторов из списка с указанием задержки во времени и силой голоса.
+
 Отдельный модуль для делегатов: выполнение publish_feed, слежение за пропущенными блоками, интерфейс для запуска/паузы на подпись блоков.
+
 Модуль E-mail оповещений, очередь писем.
 
 ## Разработка
@@ -45,17 +49,24 @@ HiddenEngine при установке запишется в автозапус�
 cd ~
 curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh -o install_nvm.sh
 bash install_nvm.sh
+source ~/.profile
 nvm ls-remote
 nvm install 8.5.0
 node -v
 sudo apt-get install nodejs-legacy
 npm install npm -g
-source ~/.profile
-git clone https://github.com/On1x/HiddenEngine.git && cd HiddenEngine && npm install
+npm install pm2 -g
+git clone https://github.com/On1x/HiddenEngine.git
+cd HiddenEngine
+apt-get install openssl
+mkdir ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/ssl.key -out ./ssl/ssl.crt -subj \"/C=HE/ST=HE/L=HE/O=HE\"
+npm install
 ```
 ## Управление состоянием приложения
 ```
 npm stop
 npm start
+npm restart
 pm2 monit hiddenengine
 ```

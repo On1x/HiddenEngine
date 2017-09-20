@@ -33,7 +33,6 @@ module.exports=class he_watchers{
 			global.he.counters.accounts=0;
 			global.he.counters.steem_queue=0;
 			global.he.counters.golos_queue=0;
-			global.he.admin={'login':'admin','password':'admin'};
 			global.he.watch_manager={'steem':1,'golos':1,'save_global':1};
 			_this.start();
 		}
