@@ -3,6 +3,7 @@ var express=require('express');
 var app=express();
 var zlib=require('zlib');
 var http=require('http');
+var https=require('https');
 var bodyparser=require('body-parser');
 var fs=require('fs');
 
@@ -101,69 +102,96 @@ var prepare_module=function(module_result){
 }
 
 app.all('*',function(req,response){
-	var _GET={};
-	var _POST={};
-	var cookies={};
-	var path_query='';
-	var path='';
-	var path_array=[];
-	var	content='';
-	var replace={};
-	var session={};
-	_POST=req.body;
-	cookies=parse_cookies(req);
-	if(-1!=req.url.indexOf('?')){
-		var path_query_arr=req.url.split('?');
-		path=''+path_query_arr[0];
-		path_query=''+path_query_arr[1];
-		if(-1!=path_query.indexOf('&')){
-			path_query_arr=path_query.split('&');
-			for(i=0;i<path_query_arr.length;i++){
-				if(-1!=path_query_arr[i].indexOf('=')){
-					var buf_arr=path_query_arr[i].split('=');
+	if(!req.secure){
+		response.redirect(302,'https://'+req.hostname+'/');
+		response.end();
+	}
+	else{
+		var _GET={};
+		var _POST={};
+		var cookies={};
+		var path_query='';
+		var path='';
+		var path_array=[];
+		var	content='';
+		var replace={};
+		var session={};
+		_POST=req.body;
+		cookies=parse_cookies(req);
+		if(-1!=req.url.indexOf('?')){
+			var path_query_arr=req.url.split('?');
+			path=''+path_query_arr[0];
+			path_query=''+path_query_arr[1];
+			if(-1!=path_query.indexOf('&')){
+				path_query_arr=path_query.split('&');
+				for(i=0;i<path_query_arr.length;i++){
+					if(-1!=path_query_arr[i].indexOf('=')){
+						var buf_arr=path_query_arr[i].split('=');
+						if(buf_arr[0]){
+							_GET[buf_arr[0]]=buf_arr[1];
+						}
+					}
+					else{
+						_GET[path_query_arr[i]]='';
+					}
+				}
+			}
+			else{
+				if(-1!=path_query.indexOf('=')){
+					var buf_arr=path_query.split('=');
 					if(buf_arr[0]){
 						_GET[buf_arr[0]]=buf_arr[1];
 					}
 				}
 				else{
-					_GET[path_query_arr[i]]='';
+					_GET[path_query]='';
 				}
 			}
 		}
 		else{
-			if(-1!=path_query.indexOf('=')){
-				var buf_arr=path_query.split('=');
-				if(buf_arr[0]){
-					_GET[buf_arr[0]]=buf_arr[1];
+			path=req.url;
+			path_query='';
+		}
+		path_array=path.split('/');
+
+		if(('public'==path_array[1])||('uploads'==path_array[1])){
+			path=path.replace('..','');
+			fs.stat(__dirname+path,function(err,stat){
+				if(stat.isDirectory()){
+					response.status(403).end('Forbidden');
 				}
-			}
-			else{
-				_GET[path_query]='';
+				else{
+					if(fs.existsSync(__dirname+path)){
+						response.sendFile(__dirname+path);
+					}
+					else{
+						response.status(404).end('Not Found');
+					}
+				}
+			});
+		}
+		else{
+			var module_name='prepare';
+			var module_file='./module/'+module_name+'.js';
+			if(fs.existsSync(module_file)){
+				var he_module=require(module_file);
+				var module=new he_module(prepare_module,{
+					'content':content,
+					'replace':replace,
+					'session':session,
+					'path_array':path_array,
+					'_GET':_GET,
+					'_POST':_POST,
+					'cookies':cookies,
+					'response':response,
+				});
 			}
 		}
 	}
-	else{
-		path=req.url;
-		path_query='';
-	}
-	path_array=path.split('/');
-
-	var module_name='prepare';
-	var module_file='./module/'+module_name+'.js';
-	if(fs.existsSync(module_file)){
-		var he_module=require(module_file);
-		var module=new he_module(prepare_module,{
-			'content':content,
-			'replace':replace,
-			'session':session,
-			'path_array':path_array,
-			'_GET':_GET,
-			'_POST':_POST,
-			'cookies':cookies,
-			'response':response,
-		});
-	}
 });
-app.listen(global.he.app_port,function(){
-	console.log(`Starting Hidden Engine on ${global.he.app_port} port...`);
-});
+var options={
+	key: fs.readFileSync(__dirname+'/ssl/ssl.key'),
+	cert: fs.readFileSync(__dirname+'/ssl/ssl.crt')
+};
+http.createServer(app).listen(80);
+https.createServer(options, app).listen(443);

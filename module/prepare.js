@@ -18,7 +18,6 @@ module.exports=class he_module{
 	exec(){
 		var admin_login=global.he.admin.login;
 		var admin_password=global.he.admin.password;
-		var admin_password_hash=crypto.createHash('md5').update(admin_password).digest("hex");
 
 		this.session.change_template='index.tpl';
 		this.session.redirect=false;
@@ -28,7 +27,7 @@ module.exports=class he_module{
 		this.session.auth=false;
 		if(typeof this.cookies.login !== 'undefined'){
 			if(this.cookies.login==admin_login){
-				if(this.cookies.password==admin_password_hash){
+				if(this.cookies.password==admin_password){
 					this.session.auth=true;
 					this.session.change_template='engine-index.tpl';
 					this.replace.menu+=`<div class="grey" style="margin:10px;text-align:right;position:absolute;text-align:right;right:55px;">Your login: ${admin_login}</div>`;

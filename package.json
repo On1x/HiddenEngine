@@ -1,27 +1,31 @@
 {
-  "name": "hidden_engine",
-  "version": "0.0.4",
-  "description": "Hidden Engine for light node.js sites",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/On1x/HiddenEngine.git"
-  },
-  "author": "Anatoly Piskunov (https://github.com/On1x)",
-  "license": "MIT",
-  "dependencies": {
-    "async-limiter": "^1.0.0",
-    "body-parser": "^1.18.0",
-    "crypto": "^1.0.1",
-    "express": "^4.15.4",
-    "golos-js": "file:golos-js",
-    "steem": "^0.6.3",
-    "zlib": "^1.0.5"
-  },
-  "contributors": [
-    "Anatoly Piskunov (https://github.com/On1x)"
-  ]
+	"name": "hiddenengine",
+	"description": "Hidden Engine for light node.js sites",
+	"version": "0.0.5",
+	"main": "index.js",
+	"author": "Anatoly Piskunov (https://github.com/On1x)",
+	"license": "MIT",
+	"scripts": {
+		"preinstall": "apt-get install openssl && mkdir ssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/ssl.key -out ./ssl/ssl.crt -subj \"/C=HE/ST=HE/L=HE/O=HE\" && pm2 startup",
+		"start": "pm2 restart index.js --name hiddenengine && pm2 save && pm2 monit hiddenengine",
+		"stop": "pm2 stop hiddenengine",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/On1x/HiddenEngine.git"
+	},
+	"dependencies": {
+		"async-limiter": "^1.0.0",
+		"body-parser": "^1.18.0",
+		"crypto": "^1.0.1",
+		"express": "^4.15.4",
+		"zlib": "^1.0.5",
+		"steem": "^0.6.3",
+		"postinstall-build": "^5.0.1",
+		"golos-js": "^0.5.21"
+	},
+	"contributors": [
+		"Anatoly Piskunov (https://github.com/On1x)"
+	]
 }

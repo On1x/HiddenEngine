@@ -21,9 +21,9 @@ module.exports=class he_module{
 			if(typeof this._POST.login !== 'undefined'){
 				if(this._POST.password==this._POST.password2){
 					global.he.admin.login=this._POST.login;
-					global.he.admin.password=this._POST.password;
+					global.he.admin.password=crypto.createHash('md5').update(this._POST.password).digest("hex");
 					this.response.cookie('login',this._POST.login,{});
-					this.response.cookie('password',crypto.createHash('md5').update(this._POST.password).digest("hex"),{});
+					this.response.cookie('password',global.he.admin.password,{});
 
 					this.session.redirect=true;
 					this.response.redirect(302,'/');

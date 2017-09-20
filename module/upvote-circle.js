@@ -25,8 +25,16 @@ module.exports=class he_module{
 									if(typeof account.posting_key !== 'undefined'){
 										if(''!=account.posting_key){
 											var queue_item={'action':'vote','data':{'user_login':account.login,'user_posting_key':account.posting_key,'target_login':this._POST.target_login,'target_permlink':this._POST.target_permlink,'vote_weight':parseInt(this._POST.vote_weight)}};
-											queue_item.id=++global.he.counters.golos_queue;
-											global.he.golos_queue.push(queue_item);
+											if(parseInt(this._POST.action_delay)>0){
+												queue_item.time=new Date().getTime() + (parseInt(this._POST.action_delay)*1000);
+											}											if(1==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.steem_queue;
+												global.he.steem_queue.push(queue_item);
+											}
+											if(2==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.golos_queue;
+												global.he.golos_queue.push(queue_item);
+											}
 										}
 									}
 								}
@@ -45,8 +53,17 @@ module.exports=class he_module{
 									if(typeof account.posting_key !== 'undefined'){
 										if(''!=account.posting_key){
 											var queue_item={'action':'flag','data':{'user_login':account.login,'user_posting_key':account.posting_key,'target_login':this._POST.target_login,'target_permlink':this._POST.target_permlink,'vote_weight':parseInt(this._POST.vote_weight)}};
-											queue_item.id=++global.he.counters.golos_queue;
-											global.he.golos_queue.push(queue_item);
+											if(parseInt(this._POST.action_delay)>0){
+												queue_item.time=new Date().getTime() + (parseInt(this._POST.action_delay)*1000);
+											}
+											if(1==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.steem_queue;
+												global.he.steem_queue.push(queue_item);
+											}
+											if(2==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.golos_queue;
+												global.he.golos_queue.push(queue_item);
+											}
 										}
 									}
 								}
@@ -65,8 +82,17 @@ module.exports=class he_module{
 									if(typeof account.active_key !== 'undefined'){
 										if(''!=account.active_key){
 											var queue_item={'action':'witness_vote','data':{'user_login':account.login,'user_active_key':account.active_key,'target_login':this._POST.target_login}};
-											queue_item.id=++global.he.counters.golos_queue;
-											global.he.golos_queue.push(queue_item);
+											if(parseInt(this._POST.action_delay)>0){
+												queue_item.time=new Date().getTime() + (parseInt(this._POST.action_delay)*1000);
+											}
+											if(1==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.steem_queue;
+												global.he.steem_queue.push(queue_item);
+											}
+											if(2==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.golos_queue;
+												global.he.golos_queue.push(queue_item);
+											}
 										}
 									}
 								}
@@ -85,8 +111,17 @@ module.exports=class he_module{
 									if(typeof account.active_key !== 'undefined'){
 										if(''!=account.active_key){
 											var queue_item={'action':'witness_unvote','data':{'user_login':account.login,'user_active_key':account.active_key,'target_login':this._POST.target_login}};
-											queue_item.id=++global.he.counters.golos_queue;
-											global.he.golos_queue.push(queue_item);
+											if(parseInt(this._POST.action_delay)>0){
+												queue_item.time=new Date().getTime() + (parseInt(this._POST.action_delay)*1000);
+											}
+											if(1==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.steem_queue;
+												global.he.steem_queue.push(queue_item);
+											}
+											if(2==parseInt(this._POST.type)){
+												queue_item.id=++global.he.counters.golos_queue;
+												global.he.golos_queue.push(queue_item);
+											}
 										}
 									}
 								}
@@ -149,6 +184,7 @@ module.exports=class he_module{
 					<br>Target login:<br><input type="text" name="target_login" value="">
 					<br>Target permlink:<br><input type="text" name="target_permlink" value="">
 					<br>Vote weight:<br><input type="text" name="vote_weight" value="10000">
+					<br>Delay:<br><input type="text" name="action_delay" value="" placeholder="seconds">
 					<hr><input type="submit" class="button" name="add_vote_action" value="Submit">
 					</form>`;
 				}
@@ -165,6 +201,7 @@ module.exports=class he_module{
 					<br>Target login:<br><input type="text" name="target_login" value="">
 					<br>Target permlink:<br><input type="text" name="target_permlink" value="">
 					<br>Flag weight:<br><input type="text" name="vote_weight" value="10000">
+					<br>Delay:<br><input type="text" name="action_delay" value="" placeholder="seconds">
 					<hr><input type="submit" class="button" name="add_flag_action" value="Submit">
 					</form>`;
 				}
@@ -179,6 +216,7 @@ module.exports=class he_module{
 						<option value="2" selected>Golos</option>
 					</select>
 					<br>Target login:<br><input type="text" name="target_login" value="">
+					<br>Delay:<br><input type="text" name="action_delay" value="" placeholder="seconds">
 					<hr><input type="submit" class="button" name="add_witness_vote_action" value="Submit">
 					</form>`;
 				}
@@ -193,6 +231,7 @@ module.exports=class he_module{
 						<option value="2" selected>Golos</option>
 					</select>
 					<br>Target login:<br><input type="text" name="target_login" value="">
+					<br>Delay:<br><input type="text" name="action_delay" value="" placeholder="seconds">
 					<hr><input type="submit" class="button" name="add_witness_unvote_action" value="Submit">
 					</form>`;
 				}

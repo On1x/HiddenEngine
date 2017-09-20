@@ -253,66 +253,82 @@ module.exports=class he_watchers{
 		var _this=this;
 		if(typeof global.he.golos_queue !== 'undefined'){
 			for(var i in global.he.golos_queue){
-				var queue_item_remove=false;
-				if('vote'==global.he.golos_queue[i].action){
-					console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-					golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,global.he.golos_queue[i].data.vote_weight,function(err, result){});
-					queue_item_remove=true;
+				var queue_execute=true;
+				if((typeof global.he.golos_queue[i].time !== 'undefined')){
+					if(global.he.golos_queue[i].time>new Date().getTime()){
+						queue_execute=false;
+					}
 				}
-				if('flag'==global.he.golos_queue[i].action){
-					console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-					golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,-1*global.he.golos_queue[i].data.flag_weight,function(err, result){});
-					queue_item_remove=true;
-				}
-				if('witness_vote'==global.he.golos_queue[i].action){
-					console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-					golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,true,function(err, result){});
-					queue_item_remove=true;
-				}
-				if('witness_unvote'==global.he.golos_queue[i].action){
-					console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-					golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,false,function(err, result){});
-					queue_item_remove=true;
-				}
-				if(queue_item_remove){
-					global.he.golos_queue.splice(i,1);
+				if(queue_execute){
+					var queue_item_remove=false;
+					if('vote'==global.he.golos_queue[i].action){
+						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
+						golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,global.he.golos_queue[i].data.vote_weight,function(err, result){});
+						queue_item_remove=true;
+					}
+					if('flag'==global.he.golos_queue[i].action){
+						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
+						golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,-1*global.he.golos_queue[i].data.flag_weight,function(err, result){});
+						queue_item_remove=true;
+					}
+					if('witness_vote'==global.he.golos_queue[i].action){
+						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
+						golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,true,function(err, result){});
+						queue_item_remove=true;
+					}
+					if('witness_unvote'==global.he.golos_queue[i].action){
+						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
+						golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,false,function(err, result){});
+						queue_item_remove=true;
+					}
+					if(queue_item_remove){
+						global.he.golos_queue.splice(i,1);
+					}
 				}
 			}
 			global.he.watch_manager.save_global=1;
 		}
-		setTimeout(function(){_this.golos_queue()},10000);
+		setTimeout(function(){_this.golos_queue()},1000);
 	}
 	steem_queue(){
 		var _this=this;
 		if(typeof global.he.steem_queue !== 'undefined'){
 			for(var i in global.he.steem_queue){
-				var queue_item_remove=false;
-				if('vote'==global.he.steem_queue[i].action){
-					console.log('Golos queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
-					golos.broadcast.vote(global.he.steem_queue[i].data.user_posting_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,global.he.steem_queue[i].data.target_permlink,global.he.steem_queue[i].data.vote_weight,function(err, result){});
-					queue_item_remove=true;
+				var queue_execute=true;
+				if((typeof global.he.steem_queue[i].time !== 'undefined')){
+					if(global.he.steem_queue[i].time>new Date().getTime()){
+						queue_execute=false;
+					}
 				}
-				if('flag'==global.he.steem_queue[i].action){
-					console.log('Golos queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
-					golos.broadcast.vote(global.he.steem_queue[i].data.user_posting_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,global.he.steem_queue[i].data.target_permlink,-1*global.he.steem_queue[i].data.flag_weight,function(err, result){});
-					queue_item_remove=true;
-				}
-				if('witness_vote'==global.he.steem_queue[i].action){
-					console.log('Golos queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
-					golos.broadcast.accountWitnessVote(global.he.steem_queue[i].data.user_active_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,true,function(err, result){});
-					queue_item_remove=true;
-				}
-				if('witness_unvote'==global.he.steem_queue[i].action){
-					console.log('Golos queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
-					golos.broadcast.accountWitnessVote(global.he.steem_queue[i].data.user_active_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,false,function(err, result){});
-					queue_item_remove=true;
-				}
-				if(queue_item_remove){
-					global.he.steem_queue.splice(i,1);
+				if(queue_execute){
+					var queue_item_remove=false;
+					if('vote'==global.he.steem_queue[i].action){
+						console.log('Steem queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
+						steem.broadcast.vote(global.he.steem_queue[i].data.user_posting_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,global.he.steem_queue[i].data.target_permlink,global.he.steem_queue[i].data.vote_weight,function(err, result){});
+						queue_item_remove=true;
+					}
+					if('flag'==global.he.steem_queue[i].action){
+						console.log('Steem queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
+						steem.broadcast.vote(global.he.steem_queue[i].data.user_posting_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,global.he.steem_queue[i].data.target_permlink,-1*global.he.steem_queue[i].data.flag_weight,function(err, result){});
+						queue_item_remove=true;
+					}
+					if('witness_vote'==global.he.steem_queue[i].action){
+						console.log('Steem queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
+						steem.broadcast.accountWitnessVote(global.he.steem_queue[i].data.user_active_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,true,function(err, result){});
+						queue_item_remove=true;
+					}
+					if('witness_unvote'==global.he.steem_queue[i].action){
+						console.log('Steem queue action #'+global.he.steem_queue[i].id+': '+global.he.steem_queue[i].action+', by user: '+global.he.steem_queue[i].data.user_login);
+						steem.broadcast.accountWitnessVote(global.he.steem_queue[i].data.user_active_key,global.he.steem_queue[i].data.user_login,global.he.steem_queue[i].data.target_login,false,function(err, result){});
+						queue_item_remove=true;
+					}
+					if(queue_item_remove){
+						global.he.steem_queue.splice(i,1);
+					}
 				}
 			}
 			global.he.watch_manager.save_global=1;
 		}
-		setTimeout(function(){_this.steem_queue()},10000);
+		setTimeout(function(){_this.steem_queue()},1000);
 	}
 }
