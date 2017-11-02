@@ -20,10 +20,10 @@
 		"body-parser": "^1.18.0",
 		"crypto": "^1.0.1",
 		"express": "^4.15.4",
-		"zlib": "^1.0.5",
-		"steem": "^0.6.3",
+		"golos-js": "^0.5.21",
 		"postinstall-build": "^5.0.1",
-		"golos-js": "^0.5.21"
+		"steem": "^0.6.3",
+		"zlib": "^1.0.5"
 	},
 	"contributors": [
 		"Anatoly Piskunov (https://github.com/On1x)"

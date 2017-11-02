@@ -1,8 +1,34 @@
 #!/usr/bin/env node
 "use strict";
 var fs=require('fs');
-var steem=require('steem');
-var golos=require('golos-js');
+
+function purgeCache(moduleName){
+	searchCache(moduleName, function (mod){
+		delete require.cache[mod.id];
+	});
+	Object.keys(module.constructor._pathCache).forEach(function(cacheKey){
+		if (cacheKey.indexOf(moduleName)>0) {
+			delete module.constructor._pathCache[cacheKey];
+		}
+	});
+};
+function searchCache(moduleName, callback){
+	var mod = require.resolve(moduleName);
+	if (mod && ((mod = require.cache[mod]) !== undefined)){
+		(function traverse(mod) {
+			mod.children.forEach(function (child){
+				traverse(child);
+			});
+			callback(mod);
+		}(mod));
+	}
+};
+function rerequire(moduleName){
+	purgeCache(moduleName);
+	return require(moduleName);
+}
+var steem=rerequire('steem');
+var golos=rerequire('golos-js');
 module.exports=class he_watchers{
 	constructor(){
 		global.he.json_file='./global.json';
@@ -15,8 +41,7 @@ module.exports=class he_watchers{
 			}).on('end', function(){
 				global.he=JSON.parse(global_buf);
 				global.he.json_file='./global.json';
-				global.he.steem_watch_block_id=0;
-				global.he.golos_watch_block_id=0;
+				global.he.history=[];
 				_this.start();
 				this.close();
 			});
@@ -28,8 +53,11 @@ module.exports=class he_watchers{
 			global.he.golos_queue.push();
 			global.he.accounts=[];
 			global.he.counters={};
+			global.he.history=[];
 			global.he.steem_watch_block_id=0;
 			global.he.golos_watch_block_id=0;
+			global.he.steem_watch_block_time=0;
+			global.he.golos_watch_block_time=0;
 			global.he.counters.accounts=0;
 			global.he.counters.steem_queue=0;
 			global.he.counters.golos_queue=0;
@@ -43,6 +71,12 @@ module.exports=class he_watchers{
 		this.save_global_watch();
 		this.golos_queue();
 		this.steem_queue();
+	}
+	add_history(str){
+		let arr={};
+		arr.t=new Date().getTime();
+		arr.s=str;
+		global.he.history.push(arr);
 	}
 	restart_golos_watch(wait){
 		var _this=this;
@@ -63,8 +97,10 @@ module.exports=class he_watchers{
 				golos.api.getDynamicGlobalProperties(function(err,result) {
 					if(!err){
 						global.he.golos_watch_block_id=result.head_block_number;
-						console.log('Starting Golos Watch... on block: #'+global.he.golos_watch_block_id);
 						global.he.watch_manager.golos=1;
+						let str='Starting Golos Watch... on block: #'+global.he.golos_watch_block_id;
+						_this.add_history(str);
+						console.log(str);
 						setTimeout(function(){_this.golos_watch()},1000);
 					}
 				});
@@ -73,7 +109,9 @@ module.exports=class he_watchers{
 				golos.api.getDynamicGlobalProperties(function(err,result) {
 					if(!err){
 						global.he.golos_watch_block_id=result.head_block_number;
-						console.log('Restarting Golos Watch... on block: #'+global.he.golos_watch_block_id);
+						let str='Restarting Golos Watch... on block: #'+global.he.golos_watch_block_id;
+						_this.add_history(str);
+						console.log(str);
 					}
 				});
 			}
@@ -82,7 +120,9 @@ module.exports=class he_watchers{
 				if(0==global.he.golos_watch_block_id){
 					global.he.golos_watch_block_id=1;
 				}
-				console.log('Continue Golos Watch... on block: #'+global.he.golos_watch_block_id);
+				let str='Continue Golos Watch... on block: #'+global.he.golos_watch_block_id;
+				_this.add_history(str);
+				console.log(str);
 				setTimeout(function(){_this.golos_watch()},1000);
 			}
 		}
@@ -106,8 +146,10 @@ module.exports=class he_watchers{
 				steem.api.getDynamicGlobalProperties(function(err,result) {
 					if(!err){
 						global.he.steem_watch_block_id=result.head_block_number;
-						console.log('Starting Steem Watch... on block: #'+global.he.steem_watch_block_id);
 						global.he.watch_manager.steem=1;
+						let str='Starting Steem Watch... on block: #'+global.he.steem_watch_block_id;
+						_this.add_history(str);
+						console.log(str);
 						setTimeout(function(){_this.steem_watch()},1000);
 					}
 				});
@@ -116,7 +158,9 @@ module.exports=class he_watchers{
 				steem.api.getDynamicGlobalProperties(function(err,result) {
 					if(!err){
 						global.he.steem_watch_block_id=result.head_block_number;
-						console.log('Restarting Steem Watch... on block: #'+global.he.steem_watch_block_id);
+						let str='Restarting Steem Watch... on block: #'+global.he.steem_watch_block_id;
+						_this.add_history(str);
+						console.log(str);
 					}
 				});
 			}
@@ -125,7 +169,9 @@ module.exports=class he_watchers{
 				if(0==global.he.steem_watch_block_id){
 					global.he.steem_watch_block_id=1;
 				}
-				console.log('Continue Steem Watch... on block: #'+global.he.steem_watch_block_id);
+				let str='Continue Steem Watch... on block: #'+global.he.steem_watch_block_id;
+				_this.add_history(str);
+				console.log(str);
 				setTimeout(function(){_this.steem_watch()},1000);
 			}
 		}
@@ -143,14 +189,23 @@ module.exports=class he_watchers{
 		setTimeout(function(){_this.save_global_watch()},30000);
 	}
 	golos_watch(){
-		var _this=this;
 		if(1!=global.he.watch_manager.golos){
-			console.log('Stopping Golos Watch... on block: #'+global.he.golos_watch_block_id);
+			let str='Stopping Golos Watch... on block: #'+global.he.golos_watch_block_id;
+			this.add_history(str);
+			console.log(str);
 			this.restart_golos_watch(true);
 		}
 		if(1==global.he.watch_manager.golos){
+			if((global.he.golos_watch_block_time+60000)<new Date().getTime()){//60 sec delay, need reconnect
+				let str='RESTARTING Golos Watch... delayed on block: #'+global.he.golos_watch_block_id;
+				this.add_history(str);
+				console.log(str);
+				golos=rerequire('golos-js');
+			}
+			var _this=this;
 			golos.api.getBlock(global.he.golos_watch_block_id,function(err,result){
 				if(null!=result){
+					global.he.golos_watch_block_time=new Date().getTime();
 					console.log('Golos Watch: fetching block #'+global.he.golos_watch_block_id);
 					for(var i in result.transactions){
 						for(var j in result.transactions[i].operations){
@@ -195,13 +250,22 @@ module.exports=class he_watchers{
 	}
 	steem_watch(){
 		if(1!=global.he.watch_manager.steem){
-			console.log('Stopping Steem Watch... on block: #'+global.he.steem_watch_block_id);
+			let str='Stopping Steem Watch... on block: #'+global.he.steem_watch_block_id;
+			this.add_history(str);
+			console.log(str);
 			this.restart_steem_watch(true);
 		}
 		if(1==global.he.watch_manager.steem){
+			if((global.he.steem_watch_block_time+60000)<new Date().getTime()){//60 sec delay, need reconnect
+				let str='RESTARTING Steem Watch... delayed on block: #'+global.he.steem_watch_block_id;
+				this.add_history(str);
+				console.log(str);
+				steem=rerequire('steem');
+			}
 			var _this=this;
 			steem.api.getBlock(global.he.steem_watch_block_id,function(err,result){
 				if(null!=result){
+					global.he.steem_watch_block_time=new Date().getTime();
 					console.log('Steem Watch: fetching block #'+global.he.steem_watch_block_id);
 					for(var i in result.transactions){
 						for(var j in result.transactions[i].operations){
@@ -248,40 +312,69 @@ module.exports=class he_watchers{
 		flag_weight=10000
 	}
 	*/
+	golos_queue_remove(i){
+		global.he.golos_queue.splice(i,1);
+	}
 	golos_queue(){
 		var _this=this;
 		if(typeof global.he.golos_queue !== 'undefined'){
 			for(var i in global.he.golos_queue){
 				var queue_execute=true;
-				if((typeof global.he.golos_queue[i].time !== 'undefined')){
+				if(typeof global.he.golos_queue[i].time !== 'undefined'){
 					if(global.he.golos_queue[i].time>new Date().getTime()){
 						queue_execute=false;
+					}
+				}
+				if(typeof global.he.golos_queue[i].times !== 'undefined'){
+					if(global.he.golos_queue[i].times>5){
+						_this.add_history('Removing action from queue #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', 5 times failed');
 					}
 				}
 				if(queue_execute){
 					var queue_item_remove=false;
 					if('vote'==global.he.golos_queue[i].action){
 						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-						golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,global.he.golos_queue[i].data.vote_weight,function(err, result){});
-						queue_item_remove=true;
+						global.he.golos_queue[i].time=new Date().getTime()+12000;
+						if(typeof global.he.golos_queue[i].times !== 'undefined'){
+							global.he.golos_queue[i].times++;
+						}
+						else{
+							global.he.golos_queue[i].times=1;
+						}
+						golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,global.he.golos_queue[i].data.vote_weight,function(err, result){if(!err){_this.golos_queue_remove(i);}});
 					}
 					if('flag'==global.he.golos_queue[i].action){
 						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-						golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,-1*global.he.golos_queue[i].data.flag_weight,function(err, result){});
-						queue_item_remove=true;
+						global.he.golos_queue[i].time=new Date().getTime()+12000;
+						if(typeof global.he.golos_queue[i].times !== 'undefined'){
+							global.he.golos_queue[i].times++;
+						}
+						else{
+							global.he.golos_queue[i].times=1;
+						}
+						golos.broadcast.vote(global.he.golos_queue[i].data.user_posting_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,global.he.golos_queue[i].data.target_permlink,-1*global.he.golos_queue[i].data.flag_weight,function(err, result){if(!err){_this.golos_queue_remove(i);}});
 					}
 					if('witness_vote'==global.he.golos_queue[i].action){
 						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-						golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,true,function(err, result){});
-						queue_item_remove=true;
+						global.he.golos_queue[i].time=new Date().getTime()+12000;
+						if(typeof global.he.golos_queue[i].times !== 'undefined'){
+							global.he.golos_queue[i].times++;
+						}
+						else{
+							global.he.golos_queue[i].times=1;
+						}
+						golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,true,function(err, result){if(!err){_this.golos_queue_remove(i);}});
 					}
 					if('witness_unvote'==global.he.golos_queue[i].action){
 						console.log('Golos queue action #'+global.he.golos_queue[i].id+': '+global.he.golos_queue[i].action+', by user: '+global.he.golos_queue[i].data.user_login);
-						golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,false,function(err, result){});
-						queue_item_remove=true;
-					}
-					if(queue_item_remove){
-						global.he.golos_queue.splice(i,1);
+						global.he.golos_queue[i].time=new Date().getTime()+12000;
+						if(typeof global.he.golos_queue[i].times !== 'undefined'){
+							global.he.golos_queue[i].times++;
+						}
+						else{
+							global.he.golos_queue[i].times=1;
+						}
+						golos.broadcast.accountWitnessVote(global.he.golos_queue[i].data.user_active_key,global.he.golos_queue[i].data.user_login,global.he.golos_queue[i].data.target_login,false,function(err, result){if(!err){_this.golos_queue_remove(i);}});
 					}
 				}
 			}

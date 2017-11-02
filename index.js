@@ -30,77 +30,6 @@ function parse_cookies(request){
 	});
 	return list;
 }
-
-var finish_request=function(module_result){
-	content=module_result.content;
-	replace=module_result.replace;
-	session=module_result.session;
-	var path_array=module_result.path_array;
-	var _GET=module_result._GET;
-	var _POST=module_result._POST;
-	var cookies=module_result.cookies;
-	var response=module_result.response;
-
-	var result='';
-	var t=new he_template('./templates/');
-	global.he.watch_manager.save_global=1;
-
-	if(!session.redirect){
-		t.open(session.change_template,'content',function(){
-			replace.content=content;
-			Object.keys(replace).forEach(function(key){
-				t.assign(key,replace[key]);
-			});
-			if(''!=replace.content){
-				result=t.get();
-				var buf = new Buffer(result, 'utf-8');
-				response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Content-Encoding': 'gzip'});
-				zlib.gzip(buf, function (_, result) {
-					response.end(result);
-				});
-			}
-			else{
-				response.status(404).end('Not Found');
-			}
-		});
-	}
-	else{
-		response.end();
-	}
-}
-
-var prepare_module=function(module_result){
-	content=module_result.content;
-	replace=module_result.replace;
-	session=module_result.session;
-	var path_array=module_result.path_array;
-	var _GET=module_result._GET;
-	var _POST=module_result._POST;
-	var cookies=module_result.cookies;
-	var response=module_result.response;
-
-	var module_name='index';
-	if(''!=path_array[1]){
-		if(url_reg.test(path_array[1])){
-			module_name=path_array[1];
-		}
-	}
-	var module_file='./module/'+module_name+'.js';
-	if(fs.existsSync(module_file)){
-		var he_module=require(module_file);
-		var module=new he_module(finish_request,{
-			'content':content,
-			'replace':replace,
-			'session':session,
-			'path_array':path_array,
-			'_GET':_GET,
-			'_POST':_POST,
-			'cookies':cookies,
-			'response':response,
-		});
-	}
-}
-
 app.all('*',function(req,response){
 	if(!req.secure){
 		response.redirect(302,'https://'+req.hostname+'/');
@@ -175,7 +104,7 @@ app.all('*',function(req,response){
 			var module_file='./module/'+module_name+'.js';
 			if(fs.existsSync(module_file)){
 				var he_module=require(module_file);
-				var module=new he_module(prepare_module,{
+				var module=new he_module({
 					'content':content,
 					'replace':replace,
 					'session':session,
@@ -184,6 +113,71 @@ app.all('*',function(req,response){
 					'_POST':_POST,
 					'cookies':cookies,
 					'response':response,
+				}).then(module_result=>{
+					content=module_result.content;
+					replace=module_result.replace;
+					session=module_result.session;
+					var path_array=module_result.path_array;
+					var _GET=module_result._GET;
+					var _POST=module_result._POST;
+					var cookies=module_result.cookies;
+					var response=module_result.response;
+
+					var module_name='index';
+					if(''!=path_array[1]){
+						if(url_reg.test(path_array[1])){
+							module_name=path_array[1];
+						}
+					}
+					var module_file='./module/'+module_name+'.js';
+					if(fs.existsSync(module_file)){
+						var he_module=require(module_file);
+						var module=new he_module({
+							'content':content,
+							'replace':replace,
+							'session':session,
+							'path_array':path_array,
+							'_GET':_GET,
+							'_POST':_POST,
+							'cookies':cookies,
+							'response':response,
+						}).then(module_result=>{
+							content=module_result.content;
+							replace=module_result.replace;
+							session=module_result.session;
+							var path_array=module_result.path_array;
+							var _GET=module_result._GET;
+							var _POST=module_result._POST;
+							var cookies=module_result.cookies;
+							var response=module_result.response;
+
+							var result='';
+							var t=new he_template('./templates/');
+							global.he.watch_manager.save_global=1;
+							if(!session.redirect){
+								t.open(session.change_template,'content',function(){
+									replace.content=content;
+									Object.keys(replace).forEach(function(key){
+										t.assign(key,replace[key]);
+									});
+									if(''!=replace.content){
+										result=t.get();
+										var buf = new Buffer(result, 'utf-8');
+										response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Content-Encoding': 'gzip'});
+										zlib.gzip(buf, function (_, result) {
+											response.end(result);
+										});
+									}
+									else{
+										response.status(404).end('Not Found');
+									}
+								});
+							}
+							else{
+								response.end();
+							}
+						});
+					}
 				});
 			}
 		}
